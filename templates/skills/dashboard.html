@@ -32,6 +32,22 @@
                 <div class="small text-muted mt-1">Reviews Received</div>
             </div>
         </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'my_appointments' %}" class="text-decoration-none">
+                <div class="card stat-card-secondary text-center p-3 h-100">
+                    <div class="display-6 fw-bold text-danger">{{ incoming_pending }}</div>
+                    <div class="small text-muted mt-1">Pending Bookings</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'my_appointments' %}" class="text-decoration-none">
+                <div class="card stat-card-secondary text-center p-3 h-100">
+                    <div class="display-6 fw-bold text-success">{{ my_upcoming }}</div>
+                    <div class="small text-muted mt-1">Upcoming Sessions</div>
+                </div>
+            </a>
+        </div>
     </div>
 
     <!-- Skills Table -->

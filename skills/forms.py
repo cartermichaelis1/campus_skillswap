@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Skill, Review
+from datetime import date as date_cls
+from .models import Skill, Review, Appointment
 
 
 class RegisterForm(UserCreationForm):
@@ -60,3 +61,24 @@ class ReviewForm(forms.ModelForm):
                 'placeholder': 'Share your experience with this skill...'
             }),
         }
+
+
+class AppointmentForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['date', 'time', 'message']
+        widgets = {
+            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'message': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Any details, questions, or location preferences...'
+            }),
+        }
+
+    def clean_date(self):
+        date = self.cleaned_data.get('date')
+        if date and date < date_cls.today():
+            raise forms.ValidationError('Please choose a date in the future.')
+        return date

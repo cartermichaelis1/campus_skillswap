@@ -20,6 +20,12 @@ urlpatterns = [
     # User dashboard
     path('dashboard/', views.dashboard, name='dashboard'),
 
+    # Appointments
+    path('skills/<int:pk>/book/',          views.book_appointment,   name='book_appointment'),
+    path('appointments/',                  views.my_appointments,    name='my_appointments'),
+    path('appointments/<int:pk>/update/',  views.update_appointment, name='update_appointment'),
+    path('appointments/<int:pk>/cancel/',  views.cancel_appointment, name='cancel_appointment'),
+
     # Registration (login/logout come from django.contrib.auth.urls)
     path('accounts/register/', views.register, name='register'),
 ]

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment — {{ skill.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <!-- Skill summary strip -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-3 d-flex align-items-center gap-3">
+                    <div class="poster-avatar">{{ skill.user.username|first|upper }}</div>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">{{ skill.title }}</div>
+                        <div class="small text-muted">offered by {{ skill.user.username }}</div>
+                    </div>
+                    <span class="badge price-badge-{{ skill.price_type }} rounded-pill px-3">
+                        {{ skill.get_price_type_display }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Booking form -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="h4 fw-bold mb-1">
+                        <i class="bi bi-calendar-plus me-2 text-primary"></i>Request an Appointment
+                    </h1>
+                    <p class="text-muted small mb-4">
+                        Pick a date and time that works for you.
+                        <strong>{{ skill.user.username }}</strong> will then accept or decline your request.
+                    </p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label for="{{ form.date.id_for_label }}" class="form-label fw-semibold">
+                                    Date <span class="text-danger">*</span>
+                                </label>
+                                {{ form.date }}
+                                {% if form.date.errors %}
+                                <div class="text-danger small mt-1">{{ form.date.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="{{ form.time.id_for_label }}" class="form-label fw-semibold">
+                                    Time <span class="text-danger">*</span>
+                                </label>
+                                {{ form.time }}
+                                {% if form.time.errors %}
+                                <div class="text-danger small mt-1">{{ form.time.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.message.id_for_label }}" class="form-label fw-semibold">
+                                Message
+                                <span class="text-muted fw-normal">(optional)</span>
+                            </label>
+                            {{ form.message }}
+                            <div class="form-text">
+                                What would you like to cover? Any location preferences or questions?
+                            </div>
+                            {% if form.message.errors %}
+                            <div class="text-danger small mt-1">{{ form.message.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-send me-1"></i>Send Request
+                            </button>
+                            <a href="{{ skill.get_absolute_url }}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

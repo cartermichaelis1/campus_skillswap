@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Skill, Review
+from .models import Category, Skill, Review, Appointment
 
 
 @admin.register(Category)
@@ -22,4 +22,12 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ['reviewer', 'skill', 'rating', 'created_at']
     list_filter = ['rating', 'created_at']
     search_fields = ['reviewer__username', 'skill__title', 'comment']
+    readonly_fields = ['created_at']
+
+
+@admin.register(Appointment)
+class AppointmentAdmin(admin.ModelAdmin):
+    list_display = ['requester', 'skill', 'date', 'time', 'status', 'created_at']
+    list_filter = ['status', 'date']
+    search_fields = ['requester__username', 'skill__title']
     readonly_fields = ['created_at']

@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block title %}My Appointments — Campus SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">
+                <i class="bi bi-calendar-week me-2 text-primary"></i>My Appointments
+            </h1>
+            <p class="text-muted mb-0">Manage bookings for your skills and sessions you've requested.</p>
+        </div>
+        <a href="{% url 'skill_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+            <i class="bi bi-compass me-1"></i>Browse Skills
+        </a>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-0" id="apptTabs">
+        <li class="nav-item">
+            <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#incoming">
+                <i class="bi bi-inbox me-1"></i>Incoming
+                {% if incoming.count %}
+                <span class="badge bg-primary rounded-pill ms-1">{{ incoming.count }}</span>
+                {% endif %}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#outgoing">
+                <i class="bi bi-send me-1"></i>My Requests
+                {% if outgoing.count %}
+                <span class="badge bg-secondary rounded-pill ms-1">{{ outgoing.count }}</span>
+                {% endif %}
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content bg-light rounded-bottom border border-top-0 p-4">
+
+        <!-- ===== INCOMING: people booking MY skills ===== -->
+        <div class="tab-pane fade show active" id="incoming">
+            {% if incoming %}
+            <div class="d-flex flex-column gap-3">
+                {% for appt in incoming %}
+                <div class="card border-0 shadow-sm appt-card-{{ appt.status }}">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center g-3">
+
+                            <!-- Who + which skill -->
+                            <div class="col-md-5">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="reviewer-avatar flex-shrink-0">
+                                        {{ appt.requester.username|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">{{ appt.requester.username }}</div>
+                                        <div class="small text-muted">
+                                            wants to book
+                                            <a href="{{ appt.skill.get_absolute_url }}"
+                                               class="text-decoration-none fw-semibold">
+                                                {{ appt.skill.title }}
+                                            </a>
+                                        </div>
+                                        {% if appt.message %}
+                                        <div class="small text-muted fst-italic mt-1">
+                                            "{{ appt.message|truncatechars:80 }}"
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Date & time -->
+                            <div class="col-md-3">
+                                <div class="small fw-semibold">
+                                    <i class="bi bi-calendar3 me-1 text-primary"></i>
+                                    {{ appt.date|date:"D, M d Y" }}
+                                </div>
+                                <div class="small text-muted">
+                                    <i class="bi bi-clock me-1"></i>{{ appt.time|time:"g:i A" }}
+                                </div>
+                            </div>
+
+                            <!-- Actions / status -->
+                            <div class="col-md-4 text-md-end">
+                                {% if appt.status == 'pending' %}
+                                <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                                    <form method="POST" action="{% url 'update_appointment' appt.pk %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="accept">
+                                        <button type="submit" class="btn btn-success btn-sm px-3">
+                                            <i class="bi bi-check-lg me-1"></i>Accept
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{% url 'update_appointment' appt.pk %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="decline">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm px-3">
+                                            <i class="bi bi-x-lg me-1"></i>Decline
+                                        </button>
+                                    </form>
+                                </div>
+                                {% else %}
+                                <span class="badge appt-status-{{ appt.status }} rounded-pill px-3 py-2 fs-6">
+                                    {% if appt.status == 'accepted' %}✓ Accepted
+                                    {% elif appt.status == 'declined' %}✕ Declined
+                                    {% else %}Cancelled by requester{% endif %}
+                                </span>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar2-x display-1 text-muted mb-3 d-block"></i>
+                <h5 class="text-muted">No incoming requests yet</h5>
+                <p class="text-muted mb-0">When students book your skills, requests will appear here.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ===== OUTGOING: appointments I've requested ===== -->
+        <div class="tab-pane fade" id="outgoing">
+            {% if outgoing %}
+            <div class="d-flex flex-column gap-3">
+                {% for appt in outgoing %}
+                <div class="card border-0 shadow-sm appt-card-{{ appt.status }}">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center g-3">
+
+                            <!-- Skill + owner -->
+                            <div class="col-md-5">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="poster-avatar flex-shrink-0">
+                                        {{ appt.skill.user.username|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">
+                                            <a href="{{ appt.skill.get_absolute_url }}"
+                                               class="text-decoration-none text-dark">
+                                                {{ appt.skill.title }}
+                                            </a>
+                                        </div>
+                                        <div class="small text-muted">
+                                            offered by {{ appt.skill.user.username }}
+                                        </div>
+                                        {% if appt.message %}
+                                        <div class="small text-muted fst-italic mt-1">
+                                            "{{ appt.message|truncatechars:80 }}"
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Date & time -->
+                            <div class="col-md-3">
+                                <div class="small fw-semibold">
+                                    <i class="bi bi-calendar3 me-1 text-primary"></i>
+                                    {{ appt.date|date:"D, M d Y" }}
+                                </div>
+                                <div class="small text-muted">
+                                    <i class="bi bi-clock me-1"></i>{{ appt.time|time:"g:i A" }}
+                                </div>
+                            </div>
+
+                            <!-- Status + cancel -->
+                            <div class="col-md-4 text-md-end">
+                                <div class="d-flex flex-column align-items-md-end gap-2">
+                                    <span class="badge appt-status-{{ appt.status }} rounded-pill px-3 py-2 fs-6">
+                                        {% if appt.status == 'pending' %}⏳ Awaiting response
+                                        {% elif appt.status == 'accepted' %}✓ Accepted
+                                        {% elif appt.status == 'declined' %}✕ Declined
+                                        {% else %}Cancelled{% endif %}
+                                    </span>
+                                    {% if appt.status == 'pending' %}
+                                    <form method="POST" action="{% url 'cancel_appointment' appt.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                            <i class="bi bi-x me-1"></i>Cancel Request
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-plus display-1 text-muted mb-3 d-block"></i>
+                <h5 class="text-muted">You haven't booked any appointments yet</h5>
+                <p class="text-muted mb-0">
+                    <a href="{% url 'skill_list' %}">Browse skills</a> and click
+                    <strong>Book Appointment</strong> to get started.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

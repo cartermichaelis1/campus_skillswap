@@ -205,3 +205,17 @@ body {
 .border-4 {
     border-width: 4px !important;
 }
+
+/* ---------- APPOINTMENTS ---------- */
+
+/* Status badge colours */
+.appt-status-pending   { background-color: #fef9c3; color: #854d0e;  border: 1px solid #fef08a; }
+.appt-status-accepted  { background-color: #dcfce7; color: #15803d;  border: 1px solid #bbf7d0; }
+.appt-status-declined  { background-color: #fee2e2; color: #dc2626;  border: 1px solid #fecaca; }
+.appt-status-cancelled { background-color: #f3f4f6; color: #6b7280;  border: 1px solid #e5e7eb; }
+
+/* Left-border accent on appointment cards */
+.appt-card-pending   { border-left: 4px solid #f59e0b !important; }
+.appt-card-accepted  { border-left: 4px solid #22c55e !important; }
+.appt-card-declined  { border-left: 4px solid #ef4444 !important; }
+.appt-card-cancelled { border-left: 4px solid #d1d5db !important; }

@@ -71,3 +71,26 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.reviewer.username} → {self.skill.title} ({self.rating}★)"
+
+
+class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('pending',   'Pending'),
+        ('accepted',  'Accepted'),
+        ('declined',  'Declined'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    skill     = models.ForeignKey(Skill, on_delete=models.CASCADE, related_name='appointments')
+    requester = models.ForeignKey(User,  on_delete=models.CASCADE, related_name='appointments_made')
+    date      = models.DateField()
+    time      = models.TimeField()
+    message   = models.TextField(blank=True)
+    status    = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['date', 'time']
+
+    def __str__(self):
+        return f"{self.requester.username} → {self.skill.title} on {self.date} at {self.time}"

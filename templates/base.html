@@ -42,6 +42,17 @@
                             <i class="bi bi-grid-3x3-gap me-1"></i>Dashboard
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{% url 'my_appointments' %}">
+                            <i class="bi bi-calendar-week me-1"></i>Appointments
+                            {% if pending_appointment_count %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
+                                  style="font-size:0.6rem;">
+                                {{ pending_appointment_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                    </li>
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav align-items-lg-center">

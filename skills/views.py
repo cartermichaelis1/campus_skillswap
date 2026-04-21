@@ -3,9 +3,10 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from datetime import date
 
-from .models import Skill, Category, Review
-from .forms import SkillForm, RegisterForm, ReviewForm
+from .models import Skill, Category, Review, Appointment
+from .forms import SkillForm, RegisterForm, ReviewForm, AppointmentForm
 
 
 def home(request):
@@ -119,9 +120,17 @@ def skill_delete(request, pk):
 def dashboard(request):
     skills = Skill.objects.filter(user=request.user).order_by('-created_at')
     total_reviews = Review.objects.filter(skill__user=request.user).count()
+    incoming_pending = Appointment.objects.filter(
+        skill__user=request.user, status='pending'
+    ).count()
+    my_upcoming = Appointment.objects.filter(
+        requester=request.user, status='accepted', date__gte=date.today()
+    ).count()
     return render(request, 'skills/dashboard.html', {
         'skills': skills,
         'total_reviews': total_reviews,
+        'incoming_pending': incoming_pending,
+        'my_upcoming': my_upcoming,
     })
 
 
@@ -173,3 +182,80 @@ def add_review(request, pk):
             messages.error(request, 'Please fill in all required fields.')
 
     return redirect('skill_detail', pk=pk)
+
+
+# ─── Appointment views ────────────────────────────────────────────────────────
+
+@login_required
+def book_appointment(request, pk):
+    skill = get_object_or_404(Skill, pk=pk)
+
+    if request.user == skill.user:
+        messages.error(request, "You can't book your own skill.")
+        return redirect('skill_detail', pk=pk)
+
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appt = form.save(commit=False)
+            appt.skill = skill
+            appt.requester = request.user
+            appt.save()
+            messages.success(
+                request,
+                f'Appointment request sent to {skill.user.username}! '
+                'Check My Appointments for updates.'
+            )
+            return redirect('skill_detail', pk=pk)
+    else:
+        form = AppointmentForm()
+
+    return render(request, 'skills/appointment_form.html', {
+        'form': form,
+        'skill': skill,
+    })
+
+
+@login_required
+def my_appointments(request):
+    # Requests others made to book MY skills
+    incoming = Appointment.objects.filter(
+        skill__user=request.user
+    ).select_related('skill', 'requester').order_by('-created_at')
+
+    # Requests I made to book others' skills
+    outgoing = Appointment.objects.filter(
+        requester=request.user
+    ).select_related('skill', 'skill__user').order_by('-created_at')
+
+    return render(request, 'skills/appointments.html', {
+        'incoming': incoming,
+        'outgoing': outgoing,
+    })
+
+
+@login_required
+def update_appointment(request, pk):
+    # Only the skill owner can accept or decline
+    appt = get_object_or_404(Appointment, pk=pk, skill__user=request.user)
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'accept':
+            appt.status = 'accepted'
+            messages.success(request, f'Appointment with {appt.requester.username} accepted!')
+        elif action == 'decline':
+            appt.status = 'declined'
+            messages.info(request, 'Appointment declined.')
+        appt.save()
+    return redirect('my_appointments')
+
+
+@login_required
+def cancel_appointment(request, pk):
+    # Only the requester can cancel their own request
+    appt = get_object_or_404(Appointment, pk=pk, requester=request.user)
+    if request.method == 'POST' and appt.status == 'pending':
+        appt.status = 'cancelled'
+        appt.save()
+        messages.success(request, 'Appointment request cancelled.')
+    return redirect('my_appointments')
