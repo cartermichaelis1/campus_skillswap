@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Skills — Campus SkillSwap{% endblock %}
+
+{% block content %}
+
+<!-- ===== SEARCH HEADER =====
+     Extension 1: Search by title or category.
+
+     HOW IT WORKS:
+     - The form uses method="GET" so search terms appear in the URL (?q=...&category=...).
+       This makes searches shareable and bookmarkable.
+     - When the user submits, the browser navigates to e.g. /skills/?q=python&category=tech
+     - Django's view reads request.GET.get('q') and request.GET.get('category')
+     - No JavaScript needed — just a plain HTML form!
+-->
+<section class="search-hero py-4 border-bottom">
+    <div class="container">
+        <h1 class="h2 fw-bold mb-3">
+            <i class="bi bi-compass me-2 text-primary"></i>Browse Skills
+        </h1>
+
+        <form method="GET" action="{% url 'skill_list' %}">
+            <div class="row g-2">
+
+                <!-- Text search box -->
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" name="q" value="{{ query }}"
+                               class="form-control"
+                               placeholder="Search by title or description...">
+                    </div>
+                </div>
+
+                <!-- Category dropdown -->
+                <div class="col-md-3">
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.slug }}"
+                                {% if category.slug == selected_category %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Submit -->
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel me-1"></i>Filter
+                    </button>
+                </div>
+
+                <!-- Clear button — only shown when filters are active -->
+                {% if query or selected_category %}
+                <div class="col-md-1">
+                    <a href="{% url 'skill_list' %}" class="btn btn-outline-secondary w-100" title="Clear filters">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </form>
+
+        <!-- Result count shown when filtering -->
+        {% if query or selected_category %}
+        <div class="mt-2 small text-muted">
+            Found <strong>{{ result_count }}</strong> result{{ result_count|pluralize }}
+            {% if query %} for "<em>{{ query }}</em>"{% endif %}
+            {% if selected_category %} in category "<em>{{ selected_category }}</em>"{% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ===== SKILLS GRID ===== -->
+<section class="py-5">
+    <div class="container">
+        {% if skills %}
+        <div class="row g-4">
+            {% for skill in skills %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card skill-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            {% if skill.category %}
+                            <span class="badge category-badge rounded-pill px-3">{{ skill.category.name }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary rounded-pill px-3">General</span>
+                            {% endif %}
+                            <span class="badge price-badge-{{ skill.price_type }} rounded-pill px-2">
+                                {{ skill.get_price_type_display }}
+                            </span>
+                        </div>
+
+                        <h5 class="card-title fw-bold mb-2">
+                            <!-- stretched-link makes the whole card clickable -->
+                            <a href="{{ skill.get_absolute_url }}"
+                               class="text-decoration-none text-dark stretched-link">
+                                {{ skill.title }}
+                            </a>
+                        </h5>
+
+                        <p class="card-text text-muted small mb-3">
+                            {{ skill.description|truncatechars:110 }}
+                        </p>
+
+                        {% with avg=skill.average_rating %}
+                        {% if avg %}
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="text-warning small">★</span>
+                            <span class="small fw-semibold">{{ avg }}</span>
+                            <span class="text-muted small">
+                                ({{ skill.review_count }} review{{ skill.review_count|pluralize }})
+                            </span>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+
+                    <div class="card-footer bg-transparent border-top-0 px-4 pb-3">
+                        <div class="d-flex justify-content-between align-items-center small text-muted">
+                            <span><i class="bi bi-person-circle me-1"></i>{{ skill.user.username }}</span>
+                            <span><i class="bi bi-calendar3 me-1"></i>{{ skill.created_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty state -->
+        <div class="text-center py-5">
+            <i class="bi bi-search display-1 text-muted mb-3 d-block"></i>
+            <h4 class="text-muted">No skills found</h4>
+            <p class="text-muted">
+                {% if query or selected_category %}
+                Try different search terms or
+                <a href="{% url 'skill_list' %}">clear your filters</a>.
+                {% else %}
+                No skills have been posted yet.
+                {% if user.is_authenticated %}
+                <a href="{% url 'skill_create' %}">Be the first to post one!</a>
+                {% endif %}
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

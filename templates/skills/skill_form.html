@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Skill — Campus SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+
+                    <h1 class="h3 fw-bold mb-1">
+                        {% if action == 'Post' %}
+                        <i class="bi bi-plus-circle me-2 text-primary"></i>Post a Skill
+                        {% else %}
+                        <i class="bi bi-pencil me-2 text-primary"></i>Edit Skill
+                        {% endif %}
+                    </h1>
+                    <p class="text-muted mb-4 small">
+                        {% if action == 'Post' %}
+                        Share what you can offer with the campus community.
+                        {% else %}
+                        Update the details of your skill listing.
+                        {% endif %}
+                    </p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold">
+                                Skill Title <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                            <div class="text-danger small mt-1">{{ form.title.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Category + Price Type side by side -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.category.id_for_label }}" class="form-label fw-semibold">
+                                    Category
+                                </label>
+                                {{ form.category }}
+                                {% if form.category.errors %}
+                                <div class="text-danger small mt-1">{{ form.category.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.price_type.id_for_label }}" class="form-label fw-semibold">
+                                    Price Type <span class="text-danger">*</span>
+                                </label>
+                                {{ form.price_type }}
+                                {% if form.price_type.errors %}
+                                <div class="text-danger small mt-1">{{ form.price_type.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">
+                                Description <span class="text-danger">*</span>
+                            </label>
+                            {{ form.description }}
+                            <div class="form-text">
+                                Tell students about your skill, experience level, and what they can expect.
+                            </div>
+                            {% if form.description.errors %}
+                            <div class="text-danger small mt-1">{{ form.description.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Contact Info -->
+                        <div class="mb-4">
+                            <label for="{{ form.contact_info.id_for_label }}" class="form-label fw-semibold">
+                                Contact Info
+                            </label>
+                            {{ form.contact_info }}
+                            <div class="form-text">
+                                How can interested students reach you? (optional)
+                            </div>
+                            {% if form.contact_info.errors %}
+                            <div class="text-danger small mt-1">{{ form.contact_info.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-check-lg me-1"></i>{{ action }} Skill
+                            </button>
+                            <a href="{% if skill %}{{ skill.get_absolute_url }}{% else %}{% url 'dashboard' %}{% endif %}"
+                               class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

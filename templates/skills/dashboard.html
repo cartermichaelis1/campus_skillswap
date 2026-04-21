@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard — Campus SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">
+                <i class="bi bi-grid-3x3-gap me-2 text-primary"></i>My Dashboard
+            </h1>
+            <p class="text-muted mb-0">Welcome back, <strong>{{ user.username }}</strong>!</p>
+        </div>
+        <a href="{% url 'skill_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Post New Skill
+        </a>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card stat-card text-center p-3 h-100">
+                <div class="display-6 fw-bold">{{ skills.count }}</div>
+                <div class="small opacity-75 mt-1">Skills Posted</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card-secondary text-center p-3 h-100">
+                <div class="display-6 fw-bold text-warning">{{ total_reviews }}</div>
+                <div class="small text-muted mt-1">Reviews Received</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Table -->
+    {% if skills %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-list-ul me-2 text-muted"></i>My Skill Posts</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Skill</th>
+                        <th class="d-none d-md-table-cell">Category</th>
+                        <th class="d-none d-md-table-cell">Type</th>
+                        <th>Rating</th>
+                        <th class="d-none d-sm-table-cell">Posted</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for skill in skills %}
+                    <tr>
+                        <td class="ps-4">
+                            <a href="{{ skill.get_absolute_url }}"
+                               class="fw-semibold text-decoration-none text-dark">
+                                {{ skill.title }}
+                            </a>
+                            <!-- On mobile, show category inline under title -->
+                            <div class="small text-muted d-md-none mt-1">
+                                {{ skill.category.name|default:"General" }} ·
+                                {{ skill.get_price_type_display }}
+                            </div>
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            <span class="badge category-badge rounded-pill">
+                                {{ skill.category.name|default:"General" }}
+                            </span>
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            <span class="badge price-badge-{{ skill.price_type }} rounded-pill">
+                                {{ skill.get_price_type_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% with avg=skill.average_rating %}
+                            {% if avg %}
+                            <span class="text-warning">★</span>
+                            <span class="small fw-semibold">{{ avg }}</span>
+                            {% else %}
+                            <span class="small text-muted">—</span>
+                            {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="small text-muted d-none d-sm-table-cell">
+                            {{ skill.created_at|date:"M d, Y" }}
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <a href="{{ skill.get_absolute_url }}"
+                                   class="btn btn-sm btn-outline-secondary" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'skill_edit' skill.pk %}"
+                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'skill_delete' skill.pk %}"
+                                   class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty state -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-journal-plus display-1 text-muted mb-3 d-block"></i>
+            <h5 class="text-muted">You haven't posted any skills yet</h5>
+            <p class="text-muted mb-4">Share what you know and connect with other students!</p>
+            <a href="{% url 'skill_create' %}" class="btn btn-primary px-4">
+                <i class="bi bi-plus-circle me-1"></i>Post Your First Skill
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

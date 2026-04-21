@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(py --version)",
+      "Bash(py -c \"import django; print\\(django.__version__\\)\")"
+    ]
+  }
+}

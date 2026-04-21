@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Skill — Campus SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5 text-center">
+
+                    <div class="text-danger mb-3">
+                        <i class="bi bi-trash3-fill display-3"></i>
+                    </div>
+
+                    <h2 class="h4 fw-bold mb-2">Delete This Skill?</h2>
+                    <p class="text-muted mb-1">You're about to permanently delete:</p>
+                    <p class="fw-semibold fs-5 mb-3">"{{ skill.title }}"</p>
+
+                    <div class="alert alert-warning py-2 small border-0 text-start">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        This will also remove all <strong>{{ skill.review_count }}</strong>
+                        review{{ skill.review_count|pluralize }} for this skill.
+                        <strong>This action cannot be undone.</strong>
+                    </div>
+
+                    <form method="POST" class="d-flex gap-2 justify-content-center mt-4">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="bi bi-trash me-1"></i>Yes, Delete
+                        </button>
+                        <a href="{{ skill.get_absolute_url }}" class="btn btn-outline-secondary px-4">
+                            Cancel
+                        </a>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

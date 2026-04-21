@@ -1,0 +1,207 @@
+/* ============================================================
+   Campus SkillSwap — Custom Styles (Extension 2: Modern Styling)
+   Built on top of Bootstrap 5. Only overrides what Bootstrap
+   doesn't handle — keep HTML simple by doing work here.
+   ============================================================ */
+
+/* ---------- GLOBAL ---------- */
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #f8f9fb;
+}
+
+/* ---------- NAVBAR ---------- */
+.navbar-brand {
+    letter-spacing: -0.5px;
+    font-size: 1.4rem;
+}
+
+/* Small circular avatar shown in the navbar dropdown trigger */
+.avatar-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+/* ---------- HERO SECTION ---------- */
+.hero-section {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #2563eb 100%);
+    min-height: 380px;
+}
+
+/* Frosted-glass stat bubble in the hero */
+.hero-stat-bubble {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2.5rem 3rem;
+}
+
+/* ---------- SEARCH HEADER ---------- */
+.search-hero {
+    background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+}
+
+/* ---------- SKILL CARDS ---------- */
+.skill-card {
+    border-radius: 14px !important;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    background: #ffffff;
+}
+
+.skill-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(79, 70, 229, 0.12) !important;
+}
+
+/* ---------- BADGES ---------- */
+
+/* Category badge — indigo */
+.category-badge {
+    background-color: #4f46e5;
+    color: #ffffff;
+}
+
+/* Price type badges */
+.price-badge-free {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.price-badge-exchange {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.price-badge-paid {
+    background-color: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fef08a;
+}
+
+/* ---------- HOW IT WORKS ---------- */
+.how-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(79, 70, 229, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(79, 70, 229, 0.15);
+}
+
+/* ---------- AUTH PAGES ---------- */
+.auth-card {
+    max-width: 480px;
+    border-radius: 18px;
+}
+
+.auth-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(79, 70, 229, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+/* ---------- DASHBOARD STATS ---------- */
+.stat-card {
+    border-radius: 14px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #ffffff;
+    border: none;
+}
+
+.stat-card-secondary {
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+}
+
+/* ---------- REVIEWS ---------- */
+.review-card {
+    border-radius: 10px;
+    border-left: 4px solid #4f46e5 !important;
+    background: #f8f9fb !important;
+}
+
+/* Reviewer avatar circle in reviews list */
+.reviewer-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #4f46e5;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Larger avatar on the skill detail sidebar */
+.poster-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ---------- FORMS ---------- */
+.form-control:focus,
+.form-select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.15);
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-primary {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+}
+
+.btn-primary:hover {
+    background-color: #4338ca;
+    border-color: #4338ca;
+}
+
+.btn-outline-primary {
+    color: #4f46e5;
+    border-color: #4f46e5;
+}
+
+.btn-outline-primary:hover {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+}
+
+/* ---------- NAVBAR BG ---------- */
+.bg-primary {
+    background-color: #4f46e5 !important;
+}
+
+/* ---------- MISC ---------- */
+.border-4 {
+    border-width: 4px !important;
+}

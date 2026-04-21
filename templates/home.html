@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}Campus SkillSwap — Student Skill Marketplace{% endblock %}
+
+{% block content %}
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero-section text-white">
+    <div class="container py-5">
+        <div class="row align-items-center py-3">
+            <div class="col-lg-7">
+                <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-semibold">
+                    🎓 For students, by students
+                </span>
+                <h1 class="display-4 fw-bold mb-3 lh-sm">
+                    Share Your Skills.<br>
+                    <span class="text-warning">Grow Together.</span>
+                </h1>
+                <p class="lead mb-4 opacity-90">
+                    Campus SkillSwap is the student marketplace for sharing knowledge,
+                    learning new skills, and connecting with peers on campus.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{% url 'skill_list' %}" class="btn btn-light btn-lg fw-semibold px-4 shadow-sm">
+                        <i class="bi bi-compass me-2"></i>Browse Skills
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'skill_create' %}" class="btn btn-warning btn-lg fw-semibold px-4 shadow-sm">
+                        <i class="bi bi-plus-circle me-2"></i>Post a Skill
+                    </a>
+                    {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-warning btn-lg fw-semibold px-4 shadow-sm">
+                        <i class="bi bi-person-plus me-2"></i>Join Free
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-flex justify-content-center mt-4 mt-lg-0">
+                <div class="hero-stat-bubble text-center">
+                    <div class="display-3 fw-bold text-warning">{{ total_skills }}</div>
+                    <div class="fs-5 text-white-50">Skills Available</div>
+                    <div class="mt-3 small text-white-50">
+                        <i class="bi bi-stars me-1 text-warning"></i>Grow your network
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CATEGORY PILLS ===== -->
+{% if categories %}
+<section class="bg-white py-3 border-bottom shadow-sm">
+    <div class="container">
+        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-center">
+            <span class="text-muted small fw-semibold me-1">Browse by:</span>
+            {% for category in categories %}
+            <a href="{% url 'skill_list' %}?category={{ category.slug }}"
+               class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                {{ category.name }}
+            </a>
+            {% endfor %}
+            <a href="{% url 'skill_list' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                View All →
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ===== RECENT SKILLS GRID ===== -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h3 fw-bold mb-0">
+                <i class="bi bi-clock-history me-2 text-primary"></i>Latest Skills
+            </h2>
+            <a href="{% url 'skill_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                View All <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        {% if recent_skills %}
+        <div class="row g-4">
+            {% for skill in recent_skills %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card skill-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            {% if skill.category %}
+                            <span class="badge category-badge rounded-pill px-3">{{ skill.category.name }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary rounded-pill px-3">General</span>
+                            {% endif %}
+                            <span class="badge price-badge-{{ skill.price_type }} rounded-pill px-2">
+                                {{ skill.get_price_type_display }}
+                            </span>
+                        </div>
+
+                        <h5 class="card-title fw-bold mb-2">
+                            <a href="{{ skill.get_absolute_url }}" class="text-decoration-none text-dark stretched-link">
+                                {{ skill.title }}
+                            </a>
+                        </h5>
+
+                        <p class="card-text text-muted small">
+                            {{ skill.description|truncatechars:100 }}
+                        </p>
+
+                        {% with avg=skill.average_rating %}
+                        {% if avg %}
+                        <div class="d-flex align-items-center gap-1 mt-2">
+                            <span class="text-warning small">★</span>
+                            <span class="small fw-semibold">{{ avg }}</span>
+                            <span class="text-muted small">({{ skill.review_count }} review{{ skill.review_count|pluralize }})</span>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 px-4 pb-3">
+                        <div class="d-flex justify-content-between align-items-center small text-muted">
+                            <span><i class="bi bi-person-circle me-1"></i>{{ skill.user.username }}</span>
+                            <span><i class="bi bi-calendar3 me-1"></i>{{ skill.created_at|date:"M d" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <p class="text-muted mt-3 mb-3">No skills posted yet. Be the first!</p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'skill_create' %}" class="btn btn-primary px-4">
+                <i class="bi bi-plus-circle me-1"></i>Post a Skill
+            </a>
+            {% else %}
+            <a href="{% url 'register' %}" class="btn btn-primary px-4">Get Started Free</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="h3 fw-bold text-center mb-5">How It Works</h2>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="how-icon mx-auto mb-3">
+                    <i class="bi bi-person-plus-fill fs-2 text-primary"></i>
+                </div>
+                <h5 class="fw-bold">1. Create an Account</h5>
+                <p class="text-muted mb-0">Sign up free in seconds — no credit card needed.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="how-icon mx-auto mb-3">
+                    <i class="bi bi-pencil-square fs-2 text-primary"></i>
+                </div>
+                <h5 class="fw-bold">2. Post Your Skills</h5>
+                <p class="text-muted mb-0">Share what you know — tutoring, design, coding, music, and more.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="how-icon mx-auto mb-3">
+                    <i class="bi bi-people-fill fs-2 text-primary"></i>
+                </div>
+                <h5 class="fw-bold">3. Connect &amp; Swap</h5>
+                <p class="text-muted mb-0">Browse listings, reach out, and start learning from each other.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
